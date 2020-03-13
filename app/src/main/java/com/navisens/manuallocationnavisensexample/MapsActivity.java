@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,6 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     HeadingDialView headingDialView;
     HeadingArrowView headingArrowView;
     ImageView pinImageView;
+    TextView headingDegreesTextView;
 
     Marker userLocationMarker;
     Bitmap userLocationBitmap;
@@ -58,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         headingArrowView = findViewById(R.id.heading_arrow);
         pinImageView = findViewById(R.id.pin);
         userLocationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.red_dot);
+        headingDegreesTextView = findViewById(R.id.heading_text);
 
         actionButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -70,6 +73,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 else if (actionButton.getText().equals("Set Position")) {
                     actionButton.setText("Set Heading");
+                    headingDegreesTextView.setVisibility(View.VISIBLE);
+                    headingDegreesTextView.setText(String.format("%.2f°",mMap.getCameraPosition().bearing));
                     headingArrowView.setVisibility(View.VISIBLE);
                     headingDialView.setVisibility(View.VISIBLE);
                     lastBearing = mMap.getCameraPosition().bearing;
@@ -79,7 +84,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 else if (actionButton.getText().equals("Set Heading")) {
                     pinImageView.setVisibility(View.INVISIBLE);
                     actionButton.setText("Manually Set Location");
+                    headingDegreesTextView.setVisibility(View.INVISIBLE);
                     headingArrowView.setVisibility(View.INVISIBLE);
+                    headingDialView.reset();
                     headingDialView.setVisibility(View.INVISIBLE);
                     mMap.getUiSettings().setScrollGesturesEnabled(true);
                     userLocationMarker.setVisible(true);
@@ -89,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     userLocationMarker.setRotation((float)heading);
                     LatLng newLoc = mMap.getCameraPosition().target;
                     motionDnaApplication.setLocationLatitudeLongitudeAndHeadingInDegrees(newLoc.latitude, newLoc.longitude, heading);
+                    follow = true;
 
                 }
                 Log.v("APP", "ACTION");
@@ -145,10 +153,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onDial(double number) {
-        Log.v(getClass().getSimpleName(),String.format("BEARING %.3f",-(lastBearing+number)));
         CameraPosition currentCamera = mMap.getCameraPosition();
         CameraUpdate headingUpdate = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(currentCamera.target).zoom(currentCamera.zoom).bearing((float)-(lastBearing+number)).build());
         mMap.animateCamera(headingUpdate,1,null);
+
+        headingDegreesTextView.setText(String.format("%.2f°",mMap.getCameraPosition().bearing));
         lastVal = number;
     }
 
@@ -172,6 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 if (userLocationMarker == null) {
+                    actionButton.setEnabled(true);
                     userLocationMarker = mMap.addMarker(new MarkerOptions().position(coordinate).icon(BitmapDescriptorFactory.fromBitmap(userLocationBitmap)).flat(true).anchor(0.5f, 0.5f));
                     CameraUpdate centerAndZoom = CameraUpdateFactory.newLatLngZoom(coordinate, 18);
                     mMap.moveCamera(centerAndZoom);

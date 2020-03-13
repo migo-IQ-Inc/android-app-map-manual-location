@@ -23,22 +23,13 @@ public class HeadingArrowView extends View {
         super(context, attrs, defStyle);
         RectShape line = new RectShape();
         mPaintColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-        if (Build.VERSION.SDK_INT >= 23) {
-            mPaintColor.setColor(getResources().getColor(R.color.navired, null));
-        } else {
-            mPaintColor.setColor(getResources().getColor(R.color.navired));
-        }
+        mPaintColor.setColor(getResources().getColor(R.color.navired, null));
         mPaintColor.setStrokeWidth(8.0f);
         mPaintColor.setStrokeCap(Paint.Cap.ROUND);
 
         mLinePaintColor = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaintColor.setStrokeWidth(8.0f);
-        if (Build.VERSION.SDK_INT >= 23) {
-            mLinePaintColor.setColor(getResources().getColor(R.color.navired,null));
-        } else {
-            mLinePaintColor.setColor(getResources().getColor(R.color.navired));
-        }
-
+        mLinePaintColor.setColor(getResources().getColor(R.color.navired,null));
         mLinePaintColor.setStyle(Paint.Style.STROKE);
         mLinePaintColor.setPathEffect(new DashPathEffect(new float[]{22,16},0));
     }

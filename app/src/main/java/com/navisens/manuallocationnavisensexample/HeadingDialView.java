@@ -29,7 +29,7 @@ class Point2D {
 }
 
 public class HeadingDialView extends View {
-    private float dialAngle;
+    private float dialAngle = 0.0f;
     private final Drawable headingDialDrawable;
     private final double innerTouchBounds = 60;
     private double outerTouchBounds = 160;
@@ -64,15 +64,15 @@ public class HeadingDialView extends View {
         dialListeners.remove(listener);
     }
 
+    public void reset() {
+        dialAngle = 0.0f;
+    }
+
     private void fireDialListenerEvent(double number) {
         // TODO fire dial event
-//        Log.v(getClass().getSimpleName(),"Number of listeners: " + dialListeners.size());
         for (DialListener listener : dialListeners) {
             listener.onDial(number);
-//            Log.v(getClass().getSimpleName(), "calling the onDial");
         }
-//        Log.v(getClass().getSimpleName(), String.format("dial %.2f",number));
-//        Toast.makeText(getContext(),String.format("dial %.2f",number),Toast.LENGTH_SHORT).show();
     }
     @Override
     protected void onDraw(Canvas canvas) {
@@ -82,9 +82,7 @@ public class HeadingDialView extends View {
         canvas.save();
         headingDialDrawable.setBounds(0, 0, this.getMeasuredWidth(), this.getMeasuredWidth());
 
-        if (dialAngle != 0) {
-            canvas.rotate(dialAngle, x, y);
-        }
+        canvas.rotate(dialAngle, x, y);
         headingDialDrawable.draw(canvas);
         canvas.restore();
     }

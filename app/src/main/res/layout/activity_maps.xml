@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
+        android:enabled="false"
         android:text="Manually Set Location"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,5 +78,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_max="50dp"
         app:layout_constraintWidth_min="50dp" />
+
+    <TextView
+        android:id="@+id/heading_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:text="0°"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
