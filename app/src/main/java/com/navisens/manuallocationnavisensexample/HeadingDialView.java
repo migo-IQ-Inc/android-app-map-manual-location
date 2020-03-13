@@ -77,9 +77,6 @@ public class HeadingDialView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int availableWidth = getRight() - getLeft();
-        int availableHeight = getBottom() - getTop();
-//        Log.v(getClass().getSimpleName(),String.format("availableWidth: %.2f availableHeight: %.2f",availableWidth,availableHeight));
         int x = getMeasuredWidth() / 2;
         int y = getMeasuredWidth() / 2;
         canvas.save();
@@ -88,7 +85,6 @@ public class HeadingDialView extends View {
         if (dialAngle != 0) {
             canvas.rotate(dialAngle, x, y);
         }
-//        InsetDrawable insetDial = new InsetDrawable(headingDialDrawable,)
         headingDialDrawable.draw(canvas);
         canvas.restore();
     }
@@ -96,14 +92,8 @@ public class HeadingDialView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         Point2D center = new Point2D(getMeasuredWidth() / 2,getMeasuredHeight() / 2);
         outerTouchBounds = center.x;
-//        final float centerX = getMeasuredWidth() / 2;
-//        final float centerY = getMeasuredHeight() / 2;
         Point2D touch = new Point2D(event.getX(), event.getY());
-//        float x1 = event.getX();
-//        float y1 = event.getY();
         Point2D displacementFromCenter = new Point2D(center.x - touch.x, center.y - touch.y);
-//        float x = x0 - x1;
-//        float y = y0 - y1;
         // use pythagorus
         double   distanceFromCenter = Math.sqrt(pow(displacementFromCenter.x,2) + pow(displacementFromCenter.y,2));
         double sinfi = displacementFromCenter.y / distanceFromCenter;
@@ -115,7 +105,6 @@ public class HeadingDialView extends View {
         } else if (center.x > touch.x && touch.y > center.y) {
             fi += 360;
         }
-//        Log.v(getClass().getSimpleName(),String.format("center: %s touch: %s displace: %s distance %.2f fi: %.2f lastfi: %.2f sinfi: %.2f",center,touch,displacementFromCenter,distanceFromCenter, fi, lastFi, sinfi));
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
@@ -125,18 +114,15 @@ public class HeadingDialView extends View {
                     lastFi = fi;
                     final float angle = dialAngle % 360;
                     fireDialListenerEvent(angle);
-//                    Log.v(getClass().getSimpleName(), "Dial Value: " + angle + " Width: " + getMeasuredWidth() + " Height: " + getMeasuredHeight());
                     invalidate();
                     return true;
                 }
             case MotionEvent.ACTION_DOWN:
-//                dialAngle = 0;
                 lastFi = fi;
                 return true;
             case MotionEvent.ACTION_UP:
 //                final float angle = dialAngle % 360;
 //                fireDialListenerEvent(angle);
-//                Log.v(getClass().getSimpleName(), "Dial Value: " + angle + " Width: " + getMeasuredWidth() + " Height: " + getMeasuredHeight());
                 return true;
             default:
                 break;
