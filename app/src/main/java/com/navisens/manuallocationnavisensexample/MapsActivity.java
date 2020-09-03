@@ -210,7 +210,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void reportError(MotionDna.ErrorCode errorCode, String s) {
-
+        Log.v("STATUS",String.format("%s msg: %s",errorCode.name(),s));
     }
 
     @Override
