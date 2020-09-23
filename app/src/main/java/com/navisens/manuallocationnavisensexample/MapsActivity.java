@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     void configureAndRunMotionDna() {
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
-        motionDnaSDK.start("NAVISENS_DEV_KEY_HERE");
+        motionDnaSDK.start("<--DEVELOPER-KEY-HERE-->");
         motionDnaSDK.startForegroundService();
         Log.v(getClass().getSimpleName(), "SDK: " + MotionDnaSDK.SDKVersion());
     }
