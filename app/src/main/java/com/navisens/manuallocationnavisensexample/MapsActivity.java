@@ -2,11 +2,8 @@ package com.navisens.manuallocationnavisensexample;
 
 import androidx.fragment.app.FragmentActivity;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,15 +22,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.navisens.motiondnaapi.MotionDna;
-import com.navisens.motiondnaapi.MotionDnaApplication;
-import com.navisens.motiondnaapi.MotionDnaInterface;
+import com.navisens.motiondnaapi.MotionDnaSDK;
+import com.navisens.motiondnaapi.MotionDnaSDKListener;
 
-import java.util.Map;
-
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MotionDnaInterface, HeadingDialView.DialListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MotionDnaSDKListener, HeadingDialView.DialListener {
 
     private GoogleMap mMap;
-    MotionDnaApplication motionDnaApplication;
+    MotionDnaSDK motionDnaSDK;
     private static final int REQUEST_LOCATION_PERMISSIONS = 1;
 
     double lastVal = 0.0;
@@ -95,14 +90,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double heading = mMap.getCameraPosition().bearing;
                     userLocationMarker.setRotation((float)heading);
                     LatLng newLoc = mMap.getCameraPosition().target;
-                    motionDnaApplication.setLocationLatitudeLongitudeAndHeadingInDegrees(newLoc.latitude, newLoc.longitude, heading);
+                    motionDnaSDK.setGlobalPositionAndHeading(newLoc.latitude, newLoc.longitude, heading);
                     follow = true;
 
                 }
                 Log.v("APP", "ACTION");
             }
         });
-        requestPermissions( MotionDnaApplication.needsRequestingPermissions()
+        requestPermissions( MotionDnaSDK.getRequiredPermissions()
                 , REQUEST_LOCATION_PERMISSIONS);
     }
 
@@ -110,7 +105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
 
-        if (MotionDnaApplication.checkMotionDnaPermissions(this) == true) {
+        if (MotionDnaSDK.checkMotionDnaPermissions(this)) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
@@ -162,20 +157,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     void configureAndRunMotionDna() {
-        motionDnaApplication = new MotionDnaApplication(this);
-        motionDnaApplication.runMotionDna("NAVISENS_DEV_KEY_HERE");
-        motionDnaApplication.setLocationNavisens();
-        motionDnaApplication.setExternalPositioningState(MotionDna.ExternalPositioningState.HIGH_ACCURACY);
-        motionDnaApplication.setBinaryFileLoggingEnabled(true);
-        motionDnaApplication.startForegroundService();
-        Log.v(getClass().getSimpleName(), "SDK: " + MotionDnaApplication.checkSDKVersion());
+        motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
+        motionDnaSDK.start("<--DEVELOPER-KEY-HERE-->");
+        motionDnaSDK.startForegroundService();
+        Log.v(getClass().getSimpleName(), "SDK: " + MotionDnaSDK.SDKVersion());
     }
 
 
     @Override
     public void receiveMotionDna(MotionDna motionDna) {
-        MotionDna.GlobalLocation globalLocation = motionDna.getLocation().globalLocation;
-        final double heading = motionDna.getLocation().heading;
+        MotionDna.GlobalLocation globalLocation = motionDna.getLocation().global;
+        final double heading = motionDna.getLocation().global.heading;
         final LatLng coordinate = new LatLng(globalLocation.latitude, globalLocation.longitude);
         runOnUiThread(new Runnable() {
             @Override
@@ -199,28 +191,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void receiveNetworkData(MotionDna motionDna) {
+    public void reportStatus(MotionDnaSDK.Status status, String s) {
+        Log.v("STATUS",String.format("%s msg: %s",status.name(),s));
 
-    }
-
-    @Override
-    public void receiveNetworkData(MotionDna.NetworkCode networkCode, Map<String, ?> map) {
-
-    }
-
-    @Override
-    public void reportError(MotionDna.ErrorCode errorCode, String s) {
-        Log.v("STATUS",String.format("%s msg: %s",errorCode.name(),s));
-    }
-
-    @Override
-    public Context getAppContext() {
-        return this.getApplicationContext();
-    }
-
-    @Override
-    public PackageManager getPkgManager() {
-        return getPackageManager();
     }
 
 }
