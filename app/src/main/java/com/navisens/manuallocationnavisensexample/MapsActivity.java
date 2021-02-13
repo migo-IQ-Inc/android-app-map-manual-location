@@ -192,8 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void reportStatus(MotionDnaSDK.Status status, String s) {
-        Log.v("STATUS",String.format("%s msg: %s",status.name(),s));
-
+        Log.v("MotionDnaSDK",String.format("Status: %s Message: %s",status.name(),s));
     }
 
 }
